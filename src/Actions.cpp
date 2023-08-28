@@ -7,7 +7,7 @@ action_t createAction(const std::vector<std::vector<double>>& rarm_position, boo
   action.rarm_position = rarm_position;
   action.follow_hand = follow_hand;
   action.invert_hand = invert_hand;
-  action.speed = speed;
+  action.single_double = speed;
   return action;
 }
 
@@ -17,7 +17,7 @@ action_t createAction(const std::vector<std::vector<double>>& larm_position, con
   action.type = "arms";
   action.larm_position = larm_position;
   action.rarm_position = rarm_position;
-  action.duration = duration;
+  action.single_double = duration;
   return action;
 }
 
@@ -37,6 +37,14 @@ action_t createAction(HeadState_e head)
   return action;
 }
 
+action_t createActionTorso(double pose)
+{
+  action_t action;
+  action.type = "torso";
+  action.single_double = pose;
+  return action;
+}
+
 action_t createActionLookHand(bool invert)
 {
   action_t action;
@@ -49,7 +57,7 @@ action_t createAction(int speak_sound)
 {
   action_t action;
   action.type = "sound";
-  action.speak_sound = speak_sound;
+  action.single_int = speak_sound;
   return action;
 }
 
@@ -65,7 +73,7 @@ action_t createActionDelay(int delay_ms)
 {
   action_t action;
   action.type = "delay";
-  action.delay_ms = delay_ms;
+  action.single_int = delay_ms;
   return action;
 }
 

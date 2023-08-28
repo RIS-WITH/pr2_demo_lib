@@ -12,8 +12,8 @@ struct action_t
   {
     gripper = gripper_none;
     head = head_none;
-    speak_sound = 0;
-    speed = 0.0;
+    single_int = 0;
+    single_double = 0.0;
   }
 
   std::string type;
@@ -23,11 +23,9 @@ struct action_t
   bool invert_hand;
   GripperState_e gripper;
   HeadState_e head;
-  int speak_sound;
   std::string speak_str;
-  int delay_ms;
-  double speed;
-  double duration;
+  int single_int;
+  double single_double;
 };
 
 action_t createAction(const std::vector<std::vector<double>>& rarm_position, bool follow_hand = false, bool invert_hand = false, double speed = 0);
@@ -37,6 +35,8 @@ action_t createAction(const std::vector<std::vector<double>>& larm_position, con
 action_t createAction(GripperState_e gripper);
 
 action_t createAction(HeadState_e head);
+
+action_t createActionTorso(double pose);
 
 action_t createActionLookHand(bool invert);
 
