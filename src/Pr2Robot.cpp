@@ -250,3 +250,26 @@ void Pr2Robot::lookAt(geometry_msgs::PointStamped point, bool wait_for, double s
   else
     point_head_client_->sendGoalAndWait(goal, ros::Duration(2));
 }
+
+void Pr2Robot::launchSynchro(const std::string& ip_addr)
+{
+  RosbridgeWsClient rbc(ip_addr);
+  rbc.addClient("service_advertiser");
+  rbc.callService("/synchro_action", {},{}); 
+}
+bool Pr2Robot::callback_wait_service(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
+{
+  free_ = true;
+  return true;
+}
+
+void Pr2Robot::waitSynchro()
+{
+  free_ = false;
+  ros::ServiceServer service = n_.advertiseService("/synchro_action",&Pr2Robot::callback_wait_service, this);
+  while(!free_)
+  {
+    ROS_INFO("wait synchro");
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  }
+}
