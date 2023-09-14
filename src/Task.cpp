@@ -45,6 +45,11 @@ void executeAction(Pr2Robot* robot, const action_t& action)
     else
       robot->lookHand(true);
   }
+  else if(action.type == "launchSynchro")
+    robot->launchSynchro(action.ip_ws);
+  else if(action.type == "waitSynchro")
+    robot->waitSynchro();
+  
 }
 
 void executeTask(Pr2Robot* robot, const std::vector<action_t>& task)
