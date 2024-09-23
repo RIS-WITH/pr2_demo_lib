@@ -74,7 +74,7 @@ void Pr2Robot::speak(int sound, const std::string& sentence)
 
   sound_request.sound = sound; //1-5 for builtin sounds -3 for sentence
   sound_request.command = 1;
-  sound_request.volume = 1.0;
+  sound_request.volume = 10.0;
   sound_request.arg = sentence;
   sound_request.arg2 = "voice_kal_diphone";
 
@@ -254,9 +254,11 @@ void Pr2Robot::lookAt(geometry_msgs::PointStamped point, bool wait_for, double s
 void Pr2Robot::launchSynchro(const std::string& ip_addr)
 {
   RosbridgeWsClient rbc(ip_addr);
+  std::cout << " in Launch Synchro " << ip_addr << std::endl;
   rbc.addClient("service_advertiser");
   rbc.callService("/synchro_action", {},{}); 
 }
+
 bool Pr2Robot::callback_wait_service(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
 {
   free_ = true;
@@ -266,7 +268,7 @@ bool Pr2Robot::callback_wait_service(std_srvs::Empty::Request& request, std_srvs
 void Pr2Robot::waitSynchro()
 {
   free_ = false;
-  ros::ServiceServer service = n_.advertiseService("/synchro_action",&Pr2Robot::callback_wait_service, this);
+  ros::ServiceServer service = n_.advertiseService("/synchro_action", &Pr2Robot::callback_wait_service, this);
   while(!free_)
   {
     ROS_INFO("wait synchro");
