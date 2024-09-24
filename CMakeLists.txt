@@ -25,7 +25,7 @@ catkin_package(
   LIBRARIES pr2_demo_lib
 
   # CATKIN_DEPENDS roscpp
-  # DEPENDS system_lib
+  DEPENDS navigation_position_refinement
 )
 
 # ##########

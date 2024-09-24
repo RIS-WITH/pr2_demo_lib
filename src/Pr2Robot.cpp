@@ -1,5 +1,7 @@
 #include "pr2_demo_lib/Pr2Robot.h"
 
+#include "rosbridge_ws_client.hpp"
+
 Pr2Robot::Pr2Robot(bool real) : tf_listener_(tf_buffer_)
 {
   is_real_ = real;
