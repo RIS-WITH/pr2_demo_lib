@@ -39,6 +39,9 @@ action_t createAction(HeadState_e head);
 
 action_t createActionTorso(double pose);
 
+action_t createActionMoveFront(double dist);
+action_t createActionMoveRight(double dist);
+
 action_t createActionLookHand(bool invert);
 
 action_t createAction(int speak_sound);

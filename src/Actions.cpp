@@ -45,6 +45,22 @@ action_t createActionTorso(double pose)
   return action;
 }
 
+action_t createActionMoveFront(double dist)
+{
+  action_t action;
+  action.type = "moveFront";
+  action.single_double = dist;
+  return action;
+}
+
+action_t createActionMoveRight(double dist)
+{
+  action_t action;
+  action.type = "moveRight";
+  action.single_double = dist;
+  return action;
+}
+
 action_t createActionLookHand(bool invert)
 {
   action_t action;

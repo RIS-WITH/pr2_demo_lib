@@ -14,22 +14,23 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_geometry_msgs
   tf2_ros
   roslib
+  navigation_position_refinement
 )
 
-###################################
-## catkin specific configuration ##
-###################################
+# ##################################
+# # catkin specific configuration ##
+# ##################################
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES pr2_demo_lib
-#  CATKIN_DEPENDS roscpp
-#  DEPENDS system_lib
+
+  # CATKIN_DEPENDS roscpp
+  # DEPENDS system_lib
 )
 
-###########
-## Build ##
-###########
-
+# ##########
+# # Build ##
+# ##########
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}

@@ -28,6 +28,10 @@ void executeAction(Pr2Robot* robot, const action_t& action)
   }
   else if(action.type == "torso")
     robot->moveTorso(action.single_double);
+  else if(action.type == "moveFront")
+    robot->moveFront(action.single_double);
+  else if(action.type == "moveRight")
+    robot->moveRight(action.single_double);
   else if(action.type == "sound")
     robot->speak(action.single_int, "");
   else if(action.type == "speak")
