@@ -7,33 +7,33 @@ Pr2Robot::Pr2Robot(bool real) : tf_listener_(tf_buffer_), free_(false)
   is_real_ = real;
 
   rarm_client_ = new TrajClient("r_arm_controller/joint_trajectory_action", true);
-  if (is_real_)
-    while (!rarm_client_->waitForServer(ros::Duration(5.0)))
+  if(is_real_)
+    while(!rarm_client_->waitForServer(ros::Duration(5.0)))
       ROS_INFO("Waiting for the right arm joint_trajectory_action server");
 
   larm_client_ = new TrajClient("l_arm_controller/joint_trajectory_action", true);
-  if (is_real_)
-    while (!larm_client_->waitForServer(ros::Duration(5.0)))
+  if(is_real_)
+    while(!larm_client_->waitForServer(ros::Duration(5.0)))
       ROS_INFO("Waiting for the left arm joint_trajectory_action server");
 
   gripper_client_ = new GripperClient("r_gripper_controller/gripper_action", true);
-  if (is_real_)
-    while (!gripper_client_->waitForServer(ros::Duration(5.0)))
+  if(is_real_)
+    while(!gripper_client_->waitForServer(ros::Duration(5.0)))
       ROS_INFO("Waiting for the r_gripper_controller/gripper_action action server to come up");
 
   nav_client_ = new NavClient("blind_movement", true);
-  if (is_real_)
-    while (!nav_client_->waitForServer(ros::Duration(1.0)) && ros::ok())
+  if(is_real_)
+    while(!nav_client_->waitForServer(ros::Duration(1.0)) && ros::ok())
       ROS_INFO("Waiting for the blind_movement server to come up");
 
   point_head_client_ = new PointHeadClient("/head_traj_controller/point_head_action", true);
-  if (is_real_)
-    while (!point_head_client_->waitForServer(ros::Duration(1.0)) && ros::ok())
+  if(is_real_)
+    while(!point_head_client_->waitForServer(ros::Duration(1.0)) && ros::ok())
       ROS_INFO("Waiting for the point_head_action server to come up");
 
   torso_client_ = new TorsoClient("torso_controller/position_joint_action", true);
-  if (is_real_)
-    while (!torso_client_->waitForServer(ros::Duration(5.0)) && ros::ok())
+  if(is_real_)
+    while(!torso_client_->waitForServer(ros::Duration(5.0)) && ros::ok())
       ROS_INFO("Waiting for the torso action server to come up");
 
   sound_pub_ = n_.advertise<sound_play::SoundRequest>("robotsound", 1000);
@@ -61,17 +61,25 @@ void Pr2Robot::initPose()
 {
   closeGripper();
   moveTorso(0);
-  startTrajectory(createArmTrajectory({{0.096, 0.802, 0.198, -2.049, -0.020, -1.877, 31.447}}, true, 2), true);
-  startTrajectory(createArmTrajectory({{0.096, 0.802, 0.198, -2.049, -0.020, -1.877, 31.447}}, false, 2), false);
+  startTrajectory(createArmTrajectory({
+                                        {0.096, 0.802, 0.198, -2.049, -0.020, -1.877, 31.447}
+  },
+                                      true, 2),
+                  true);
+  startTrajectory(createArmTrajectory({
+                                        {0.096, 0.802, 0.198, -2.049, -0.020, -1.877, 31.447}
+  },
+                                      false, 2),
+                  false);
   waitForArmsTrajectory();
 }
 
-void Pr2Robot::say(const std::string &txt)
+void Pr2Robot::say(const std::string& txt)
 {
   std_msgs::String msg;
-  if (lang_ == "en")
+  if(lang_ == "en")
     msg.data = txt;
-  else if (en2fr_.find(txt) != en2fr_.end())
+  else if(en2fr_.find(txt) != en2fr_.end())
     msg.data = en2fr_[txt];
   else
     msg.data = txt;
@@ -79,7 +87,7 @@ void Pr2Robot::say(const std::string &txt)
   // usleep(120000*txt.size());
 }
 
-void Pr2Robot::speak(int sound, const std::string &sentence)
+void Pr2Robot::speak(int sound, const std::string& sentence)
 {
   sound_play::SoundRequest sound_request;
 
@@ -95,17 +103,17 @@ void Pr2Robot::speak(int sound, const std::string &sentence)
 
 void Pr2Robot::startTrajectory(pr2_controllers_msgs::JointTrajectoryGoal goal, bool right)
 {
-  if (!is_real_)
+  if(!is_real_)
     return;
 
   goal.trajectory.header.stamp = ros::Time::now() + ros::Duration(1.0);
-  if (right)
+  if(right)
     rarm_client_->sendGoal(goal);
   else
     larm_client_->sendGoal(goal);
 }
 
-pr2_controllers_msgs::JointTrajectoryGoal Pr2Robot::createArmTrajectory(const std::vector<std::vector<double>> &positions, bool right, double duration)
+pr2_controllers_msgs::JointTrajectoryGoal Pr2Robot::createArmTrajectory(const std::vector<std::vector<double>>& positions, bool right, double duration)
 {
   pr2_controllers_msgs::JointTrajectoryGoal goal;
 
@@ -119,7 +127,7 @@ pr2_controllers_msgs::JointTrajectoryGoal Pr2Robot::createArmTrajectory(const st
 
   goal.trajectory.points.resize(positions.size());
 
-  for (size_t i = 0; i < positions.size(); i++)
+  for(size_t i = 0; i < positions.size(); i++)
   {
     goal.trajectory.points[i].positions = positions[i];
     goal.trajectory.points[i].velocities = std::vector<double>(7, 0);
@@ -129,14 +137,14 @@ pr2_controllers_msgs::JointTrajectoryGoal Pr2Robot::createArmTrajectory(const st
   return goal;
 }
 
-void Pr2Robot::setLang(const std::string &lang)
+void Pr2Robot::setLang(const std::string& lang)
 {
   lang_ = lang;
 }
 
 void Pr2Robot::lookFront()
 {
-  if (!is_real_)
+  if(!is_real_)
     return;
 
   geometry_msgs::PointStamped point;
@@ -149,7 +157,7 @@ void Pr2Robot::lookFront()
 
 void Pr2Robot::lookHand(bool wait, double speed)
 {
-  if (!is_real_)
+  if(!is_real_)
     return;
 
   geometry_msgs::PointStamped point;
@@ -162,7 +170,7 @@ void Pr2Robot::lookHand(bool wait, double speed)
 
 void Pr2Robot::lookInvertHand(bool wait, double speed)
 {
-  if (!is_real_)
+  if(!is_real_)
     return;
 
   geometry_msgs::PointStamped point;
@@ -178,7 +186,7 @@ void Pr2Robot::lookInvertHand(bool wait, double speed)
     transformed_point.point.y = -transformed_point.point.y;
     lookAt(transformed_point, wait, speed);
   }
-  catch (tf2::TransformException &ex)
+  catch(tf2::TransformException& ex)
   {
     ROS_WARN("Failure %s\n", ex.what());
   }
@@ -186,14 +194,14 @@ void Pr2Robot::lookInvertHand(bool wait, double speed)
 
 void Pr2Robot::waitForArmTrajectory(bool follow_hand, bool invert_hand, double speed)
 {
-  if (!is_real_)
+  if(!is_real_)
     return;
 
-  while (!rarm_client_->getState().isDone() && ros::ok())
+  while(!rarm_client_->getState().isDone() && ros::ok())
   {
-    if (follow_hand)
+    if(follow_hand)
     {
-      if (invert_hand == false)
+      if(invert_hand == false)
         lookHand(false, speed);
       else
         lookInvertHand(false, speed);
@@ -205,10 +213,10 @@ void Pr2Robot::waitForArmTrajectory(bool follow_hand, bool invert_hand, double s
 
 void Pr2Robot::waitForArmsTrajectory()
 {
-  if (!is_real_)
+  if(!is_real_)
     return;
 
-  while (!rarm_client_->getState().isDone() && !larm_client_->getState().isDone() && ros::ok())
+  while(!rarm_client_->getState().isDone() && !larm_client_->getState().isDone() && ros::ok())
     usleep(50000);
 }
 
@@ -219,7 +227,7 @@ void Pr2Robot::moveTorso(double pose, bool wait, double speed)
   goal.min_duration = ros::Duration(2.0);
   goal.max_velocity = (speed != 0) ? speed : 1.0;
 
-  if (wait == false)
+  if(wait == false)
     torso_client_->sendGoal(goal);
   else
     torso_client_->sendGoalAndWait(goal, ros::Duration(10));
@@ -234,7 +242,7 @@ void Pr2Robot::moveGripper(GripperState_e state)
   ROS_INFO("Sending gripper goal");
   gripper_client_->sendGoal(gripper_goal);
   gripper_client_->waitForResult();
-  if (gripper_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+  if(gripper_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
     ROS_INFO("The gripper operated!");
   else
     ROS_INFO("The gripper failed.");
@@ -249,7 +257,7 @@ void Pr2Robot::moveFront(double dist)
 
   nav_client_->sendGoal(goal);
   nav_client_->waitForResult();
-  if (nav_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+  if(nav_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
     ROS_INFO("The navigation operated!");
   else
     ROS_INFO("The navigation failed.");
@@ -264,7 +272,22 @@ void Pr2Robot::moveRight(double dist)
 
   nav_client_->sendGoal(goal);
   nav_client_->waitForResult();
-  if (nav_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+  if(nav_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+    ROS_INFO("The navigation operated!");
+  else
+    ROS_INFO("The navigation failed.");
+}
+
+void Pr2Robot::move(double dist_x, double dist_y)
+{
+  navigation_position_refinement::BlindMovementGoal goal;
+  goal.y_movement = -dist_y;
+  goal.x_movement = dist_x;
+  goal.linear_velocity = 0.1;
+
+  nav_client_->sendGoal(goal);
+  nav_client_->waitForResult();
+  if(nav_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
     ROS_INFO("The navigation operated!");
   else
     ROS_INFO("The navigation failed.");
@@ -281,29 +304,29 @@ void Pr2Robot::lookAt(geometry_msgs::PointStamped point, bool wait_for, double s
 
   goal.min_duration = ros::Duration(0.00001);
 
-  if (wait_for)
+  if(wait_for)
     goal.max_velocity = (speed != 0) ? speed : 1.0;
   else
     goal.max_velocity = (speed != 0) ? speed : 0.5;
 
-  if (wait_for == false)
+  if(wait_for == false)
     point_head_client_->sendGoal(goal);
   else
     point_head_client_->sendGoalAndWait(goal, ros::Duration(2));
 }
 
-void Pr2Robot::synchro(const std::string &ip_addr)
+void Pr2Robot::synchro(const std::string& ip_addr)
 {
-  if (ip_addr.empty() == false)
+  if(ip_addr.empty() == false)
   {
     launchSynchro(ip_addr);
     waitSynchro(ip_addr);
   }
 }
 
-void Pr2Robot::launchSynchro(const std::string &ip_addr)
+void Pr2Robot::launchSynchro(const std::string& ip_addr)
 {
-  if (ip_addr.empty() == false)
+  if(ip_addr.empty() == false)
   {
     RosbridgeWsClient rbc(ip_addr);
     std::cout << " in Launch Synchro " << ip_addr << std::endl;
@@ -312,18 +335,18 @@ void Pr2Robot::launchSynchro(const std::string &ip_addr)
   }
 }
 
-bool Pr2Robot::callback_wait_service(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response)
+bool Pr2Robot::callback_wait_service(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
 {
   std::cout << "callback_wait_service" << std::endl;
   free_ = true;
   return true;
 }
 
-void Pr2Robot::waitSynchro(const std::string &ip_addr)
+void Pr2Robot::waitSynchro(const std::string& ip_addr)
 {
-  if (ip_addr.empty() == false)
+  if(ip_addr.empty() == false)
   {
-    while (!free_)
+    while(!free_)
     {
       ROS_INFO("wait synchro");
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));

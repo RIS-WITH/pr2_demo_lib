@@ -26,6 +26,7 @@ struct action_t
   std::string speak_str;
   int single_int;
   double single_double;
+  double second_double;
   std::string ip_ws;
 };
 
@@ -41,6 +42,7 @@ action_t createActionTorso(double pose);
 
 action_t createActionMoveFront(double dist);
 action_t createActionMoveRight(double dist);
+action_t createActionMoveRight(double dist_x, double dist_y);
 
 action_t createActionLookHand(bool invert);
 

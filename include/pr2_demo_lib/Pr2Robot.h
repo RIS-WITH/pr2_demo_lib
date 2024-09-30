@@ -1,28 +1,24 @@
 #ifndef PR2_DEMO_LIB_PR2ROBOT_H
 #define PR2_DEMO_LIB_PR2ROBOT_H
 
-#include "pr2_demo_lib/Types.h"
-
-#include <condition_variable>
-#include <mutex>
-#include <thread>
+#include <actionlib/client/simple_action_client.h>
+#include <actionlib/client/terminal_state.h>
 #include <chrono>
-
+#include <condition_variable>
+#include <geometry_msgs/PoseStamped.h>
+#include <mutex>
+#include <navigation_position_refinement/BlindMovementAction.h>
+#include <pr2_controllers_msgs/JointTrajectoryAction.h>
+#include <pr2_controllers_msgs/PointHeadAction.h>
+#include <pr2_controllers_msgs/Pr2GripperCommandAction.h>
+#include <pr2_controllers_msgs/SingleJointPositionAction.h>
+#include <sound_play/sound_play.h>
 #include <std_msgs/String.h>
 #include <std_srvs/Empty.h>
-#include <geometry_msgs/PoseStamped.h>
-
-#include <pr2_controllers_msgs/SingleJointPositionAction.h>
-#include <pr2_controllers_msgs/JointTrajectoryAction.h>
-#include <pr2_controllers_msgs/Pr2GripperCommandAction.h>
-#include <pr2_controllers_msgs/PointHeadAction.h>
-#include <navigation_position_refinement/BlindMovementAction.h>
-
-#include <actionlib/client/terminal_state.h>
-#include <actionlib/client/simple_action_client.h>
-#include <sound_play/sound_play.h>
-
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <thread>
+
+#include "pr2_demo_lib/Types.h"
 #include "tf2_ros/transform_listener.h"
 
 typedef actionlib::SimpleActionClient<pr2_controllers_msgs::JointTrajectoryAction> TrajClient;
@@ -34,16 +30,16 @@ typedef actionlib::SimpleActionClient<navigation_position_refinement::BlindMovem
 class Pr2Robot
 {
 protected:
-  TrajClient *rarm_client_;
-  TrajClient *larm_client_;
-  TorsoClient *torso_client_;
-  GripperClient *gripper_client_;
-  NavClient *nav_client_;
+  TrajClient* rarm_client_;
+  TrajClient* larm_client_;
+  TorsoClient* torso_client_;
+  GripperClient* gripper_client_;
+  NavClient* nav_client_;
 
   ros::ServiceServer synchro_srv_;
   std::atomic_bool free_;
 
-  PointHeadClient *point_head_client_;
+  PointHeadClient* point_head_client_;
 
   ros::NodeHandle n_;
   ros::Publisher sound_pub_;
@@ -68,16 +64,16 @@ public:
 
   void initPose();
 
-  void say(const std::string &txt);
-  void speak(int sound, const std::string &sentence);
+  void say(const std::string& txt);
+  void speak(int sound, const std::string& sentence);
 
   void openGripper() { moveGripper(gripper_open); }
   void closeGripper() { moveGripper(gripper_close); }
 
   void startTrajectory(pr2_controllers_msgs::JointTrajectoryGoal goal, bool right = true);
-  pr2_controllers_msgs::JointTrajectoryGoal createArmTrajectory(const std::vector<std::vector<double>> &positions, bool right = true, double duration = 1.1);
+  pr2_controllers_msgs::JointTrajectoryGoal createArmTrajectory(const std::vector<std::vector<double>>& positions, bool right = true, double duration = 1.1);
 
-  void setLang(const std::string &lang);
+  void setLang(const std::string& lang);
 
   void lookFront();
   void lookHand(bool wait = false, double speed = 0.0);
@@ -90,6 +86,7 @@ public:
 
   void moveFront(double dist);
   void moveRight(double dist);
+  void move(double dist_x, double dist_y);
 
   void startChrono() { time_start_ = std::chrono::steady_clock::now(); }
   void stopChrono() { time_stop_ = std::chrono::steady_clock::now(); }
@@ -102,7 +99,7 @@ public:
 private:
   void moveGripper(GripperState_e state);
   void lookAt(geometry_msgs::PointStamped point, bool wait_for = false, double speed = 0.0);
-  bool callback_wait_service(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
+  bool callback_wait_service(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
 };
 
 #endif // PR2_DEMO_LIB_PR2ROBOT_H
