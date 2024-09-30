@@ -42,7 +42,8 @@ action_t createActionTorso(double pose);
 
 action_t createActionMoveFront(double dist);
 action_t createActionMoveRight(double dist);
-action_t createActionMoveRight(double dist_x, double dist_y);
+action_t createActionMove(double dist_x, double dist_y);
+action_t createActionTurn(double angle);
 
 action_t createActionLookHand(bool invert);
 

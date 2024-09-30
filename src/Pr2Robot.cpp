@@ -293,6 +293,20 @@ void Pr2Robot::move(double dist_x, double dist_y)
     ROS_INFO("The navigation failed.");
 }
 
+void Pr2Robot::turn(double angle)
+{
+  navigation_position_refinement::BlindMovementGoal goal;
+  goal.theta_rotation = angle * M_PI / 180.;
+  goal.angular_velocity = 0.1;
+
+  nav_client_->sendGoal(goal);
+  nav_client_->waitForResult();
+  if(nav_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+    ROS_INFO("The navigation operated!");
+  else
+    ROS_INFO("The navigation failed.");
+}
+
 void Pr2Robot::lookAt(geometry_msgs::PointStamped point, bool wait_for, double speed)
 {
   pr2_controllers_msgs::PointHeadGoal goal;
