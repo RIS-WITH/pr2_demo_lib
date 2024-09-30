@@ -40,6 +40,9 @@ protected:
   GripperClient *gripper_client_;
   NavClient *nav_client_;
 
+  ros::ServiceServer synchro_srv_;
+  std::atomic_bool free_;
+
   PointHeadClient *point_head_client_;
 
   ros::NodeHandle n_;
@@ -92,15 +95,14 @@ public:
   void stopChrono() { time_stop_ = std::chrono::steady_clock::now(); }
   std::chrono::duration<double> getChrono() { return time_stop_ - time_start_; }
 
-  void launchSynchro(const std::string &ip_ws);
-  void waitSynchro();
+  void synchro(const std::string& ip_addr);
+  void launchSynchro(const std::string& ip_addr);
+  void waitSynchro(const std::string& ip_addr);
 
 private:
   void moveGripper(GripperState_e state);
   void lookAt(geometry_msgs::PointStamped point, bool wait_for = false, double speed = 0.0);
   bool callback_wait_service(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
-
-  std::atomic_bool free_;
 };
 
 #endif // PR2_DEMO_LIB_PR2ROBOT_H

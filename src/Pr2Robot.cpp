@@ -2,7 +2,7 @@
 
 #include "rosbridge_ws_client.hpp"
 
-Pr2Robot::Pr2Robot(bool real) : tf_listener_(tf_buffer_)
+Pr2Robot::Pr2Robot(bool real) : tf_listener_(tf_buffer_), free_(false)
 {
   is_real_ = real;
 
@@ -38,6 +38,8 @@ Pr2Robot::Pr2Robot(bool real) : tf_listener_(tf_buffer_)
 
   sound_pub_ = n_.advertise<sound_play::SoundRequest>("robotsound", 1000);
   tts_pub_ = n_.advertise<std_msgs::String>("say", 1000);
+
+  synchro_srv_ = n_.advertiseService("/synchro_action", &Pr2Robot::callback_wait_service, this);
 
   lang_ = "fr";
   std::cout << "Pr2Robot is ready" << std::endl;
@@ -290,27 +292,42 @@ void Pr2Robot::lookAt(geometry_msgs::PointStamped point, bool wait_for, double s
     point_head_client_->sendGoalAndWait(goal, ros::Duration(2));
 }
 
+void Pr2Robot::synchro(const std::string &ip_addr)
+{
+  if (ip_addr.empty() == false)
+  {
+    launchSynchro(ip_addr);
+    waitSynchro(ip_addr);
+  }
+}
+
 void Pr2Robot::launchSynchro(const std::string &ip_addr)
 {
-  RosbridgeWsClient rbc(ip_addr);
-  std::cout << " in Launch Synchro " << ip_addr << std::endl;
-  rbc.addClient("service_advertiser");
-  rbc.callService("/synchro_action", {}, {});
+  if (ip_addr.empty() == false)
+  {
+    RosbridgeWsClient rbc(ip_addr);
+    std::cout << " in Launch Synchro " << ip_addr << std::endl;
+    rbc.addClient("service_advertiser");
+    rbc.callService("/synchro_action", {}, {});
+  }
 }
 
 bool Pr2Robot::callback_wait_service(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response)
 {
+  std::cout << "callback_wait_service" << std::endl;
   free_ = true;
   return true;
 }
 
-void Pr2Robot::waitSynchro()
+void Pr2Robot::waitSynchro(const std::string &ip_addr)
 {
-  free_ = false;
-  ros::ServiceServer service = n_.advertiseService("/synchro_action", &Pr2Robot::callback_wait_service, this);
-  while (!free_)
+  if (ip_addr.empty() == false)
   {
-    ROS_INFO("wait synchro");
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    while (!free_)
+    {
+      ROS_INFO("wait synchro");
+      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+    free_ = false;
   }
 }

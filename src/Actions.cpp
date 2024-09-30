@@ -107,6 +107,14 @@ action_t createActionStopChrono()
   return action;
 }
 
+action_t createActionSynchro(const std::string& ip_addr)
+{
+  action_t action;
+  action.type = "synchro";
+  action.ip_ws = ip_addr;
+  return action;
+}
+
 action_t createActionLaunchSynchro(const std::string& ip_addr)
 {
   action_t action;
@@ -115,9 +123,10 @@ action_t createActionLaunchSynchro(const std::string& ip_addr)
   return action;
 }
 
-action_t createActionWaitSynchro()
+action_t createActionWaitSynchro(const std::string& ip_addr)
 {
   action_t action;
   action.type = "waitSynchro";
+  action.ip_ws = ip_addr;
   return action;
 }
