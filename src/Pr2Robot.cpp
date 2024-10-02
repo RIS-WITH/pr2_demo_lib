@@ -254,6 +254,7 @@ void Pr2Robot::moveFront(double dist)
   goal.x_movement = dist;
   goal.y_movement = 0;
   goal.linear_velocity = 0.1;
+  goal.angular_velocity = 0.2;
 
   nav_client_->sendGoal(goal);
   nav_client_->waitForResult();
@@ -269,6 +270,7 @@ void Pr2Robot::moveRight(double dist)
   goal.y_movement = -dist;
   goal.x_movement = 0;
   goal.linear_velocity = 0.1;
+  goal.angular_velocity = 0.2;
 
   nav_client_->sendGoal(goal);
   nav_client_->waitForResult();
@@ -284,6 +286,7 @@ void Pr2Robot::move(double dist_x, double dist_y)
   goal.y_movement = -dist_y;
   goal.x_movement = dist_x;
   goal.linear_velocity = 0.1;
+  goal.angular_velocity = 0.2;
 
   nav_client_->sendGoal(goal);
   nav_client_->waitForResult();
@@ -297,7 +300,8 @@ void Pr2Robot::turn(double angle)
 {
   navigation_position_refinement::BlindMovementGoal goal;
   goal.theta_rotation = angle * M_PI / 180.;
-  goal.angular_velocity = 0.1;
+  goal.angular_velocity = 0.2;
+  goal.linear_velocity = 0.1;
 
   nav_client_->sendGoal(goal);
   nav_client_->waitForResult();
@@ -346,6 +350,7 @@ void Pr2Robot::launchSynchro(const std::string& ip_addr)
     std::cout << " in Launch Synchro " << ip_addr << std::endl;
     rbc.addClient("service_advertiser");
     rbc.callService("/synchro_action", {}, {});
+    std::cout << " Synchro done " << ip_addr << std::endl;
   }
 }
 
