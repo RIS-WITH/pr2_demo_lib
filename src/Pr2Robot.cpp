@@ -22,9 +22,9 @@ Pr2Robot::Pr2Robot(bool real) : tf_listener_(tf_buffer_), free_(false)
       ROS_INFO("Waiting for the r_gripper_controller/gripper_action action server to come up");
 
   nav_client_ = new NavClient("blind_movement", true);
-  if(is_real_)
-    while(!nav_client_->waitForServer(ros::Duration(1.0)) && ros::ok())
-      ROS_INFO("Waiting for the blind_movement server to come up");
+  // if(is_real_)
+  //   while(!nav_client_->waitForServer(ros::Duration(1.0)) && ros::ok())
+  //     ROS_INFO("Waiting for the blind_movement server to come up");
 
   point_head_client_ = new PointHeadClient("/head_traj_controller/point_head_action", true);
   if(is_real_)
@@ -301,7 +301,7 @@ void Pr2Robot::turn(double angle)
   navigation_position_refinement::BlindMovementGoal goal;
   goal.theta_rotation = angle * M_PI / 180.;
   goal.angular_velocity = 0.2;
-  goal.linear_velocity = 0.1;
+  goal.linear_velocity = 0.; // 0.1;
 
   nav_client_->sendGoal(goal);
   nav_client_->waitForResult();
