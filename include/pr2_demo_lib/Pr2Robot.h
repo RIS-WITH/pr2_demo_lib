@@ -86,8 +86,8 @@ public:
 
   void moveFront(double dist);
   void moveRight(double dist);
-  void move(double dist_x, double dist_y);
-  void turn(double angle);
+  void move(double dist_x, double dist_y, double linear_velocity = 0.1, double angular_velocity = 0.2);
+  void turn(double angle, double angular_velocity = 0.2);
 
   void startChrono() { time_start_ = std::chrono::steady_clock::now(); }
   void stopChrono() { time_stop_ = std::chrono::steady_clock::now(); }

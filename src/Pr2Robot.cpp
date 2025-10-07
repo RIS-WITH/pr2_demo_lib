@@ -280,13 +280,13 @@ void Pr2Robot::moveRight(double dist)
     ROS_INFO("The navigation failed.");
 }
 
-void Pr2Robot::move(double dist_x, double dist_y)
+void Pr2Robot::move(double dist_x, double dist_y, double linear_velocity, double angular_velocity)
 {
   navigation_position_refinement::BlindMovementGoal goal;
   goal.y_movement = -dist_y;
   goal.x_movement = dist_x;
-  goal.linear_velocity = 0.1;
-  goal.angular_velocity = 0.2;
+  goal.linear_velocity = linear_velocity;
+  goal.angular_velocity = angular_velocity;
 
   nav_client_->sendGoal(goal);
   nav_client_->waitForResult();
@@ -296,11 +296,11 @@ void Pr2Robot::move(double dist_x, double dist_y)
     ROS_INFO("The navigation failed.");
 }
 
-void Pr2Robot::turn(double angle)
+void Pr2Robot::turn(double angle, double angular_velocity)
 {
   navigation_position_refinement::BlindMovementGoal goal;
   goal.theta_rotation = angle * M_PI / 180.;
-  goal.angular_velocity = 0.2;
+  goal.angular_velocity = angular_velocity;
   goal.linear_velocity = 0.; // 0.1;
 
   nav_client_->sendGoal(goal);
